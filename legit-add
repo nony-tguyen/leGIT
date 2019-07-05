@@ -1,3 +1,53 @@
 #!/bin/dash
 
+# Checking .legit repo expo exist in current directory
+if [ ! -d ".legit" ]
+then
+    echo "$0: error: no .legit directory containing legit repository exists" 1>&2
+    exit 1
+fi
 
+# Check correct usage
+if [ "$#" -eq 0 ]
+then
+    echo "usage: $0 <filenames>" 1>&2
+    exit 1
+fi
+
+# Check valid file names and that they exist as a regular file
+for fn in "$@"
+do
+    if echo "$fn" | egrep -v "^[a-zA-Z0-9][a-zA-Z0-9\.-_]*" > /dev/null
+    then
+        echo "$0: error: invalid filename '$fn'" 1>&2
+        exit 1
+    fi
+    
+    if [ ! -e "$fn" ]
+    then
+        echo "$0: error: can not open '$fn'" 1>&2
+        exit 1
+    fi
+    # Storing only ordinary files in the index use -r or -f?    
+    if [ ! -f "$fn" ]  
+    then
+        echo "$0: error: '$fn' is not a regular file" 1>&2
+        exit 1
+    fi
+done
+
+# Create sub-directory to store files from legit-add if haven't already
+########################### CLEAN THIS UP ##############################
+if [ ! -d ".legit/staging_area" ]
+then
+    echo "no"
+    mkdir ".legit/staging_area"
+else
+    echo "exists already"
+fi
+
+for file in "$@" 
+do
+    #echo "$file"
+    cp "$file" ".legit/staging_area/"
+done

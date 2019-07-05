@@ -1,6 +1,6 @@
 #!/bin/dash
 
-# Checking no cmd line args should be supplied
+# Checking that no cmd line args are supplied
 if [ "$#" -ne 0 ]
 then
     echo "usage: legit-init" 1>&2

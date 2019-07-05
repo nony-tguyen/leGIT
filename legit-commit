@@ -1,0 +1,44 @@
+#!/bin/dash
+
+# Checking .legit repo expo exist in current directory
+if [ ! -d ".legit" ]
+then
+    echo "$0: error: no .legit directory containing legit repository exists" 1>&2
+    exit 1
+fi
+
+# Checking invalid arguments supplied
+if echo "$*" | egrep -v "^(-a )?\-m [^ ]+$" > /dev/null  
+then
+    echo "usage: legit-commit [-a] -m commit-message" 1>&2
+    exit 1
+fi
+
+# If -a is passed in
+#if egrep "\-a" > /dev/null
+
+##### CONSIDER CASE WHERE THERE IS NOTHING TO COMMIT #############
+
+# Create repo to store commited files if haven't already
+if [ ! -d ".legit/repo" ]
+then
+    mkdir ".legit/repo"
+fi
+
+# Store sub-directories in .legit/repo/ for each commit, where n is the commit number
+n=0
+fn=".commit"
+while test -d "$fn.$n"
+do
+    n=$((n + 1))
+done
+
+mkdir ".legit/repo/$fn.$n"
+
+for file in ".legit/staging_area"/*
+do
+    cp "$file" ".legit/repo/$fn.$n/"
+
+done
+
+

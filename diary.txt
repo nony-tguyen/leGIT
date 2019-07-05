@@ -2,10 +2,13 @@
 #DATE       #START      #STOP       #DESCRIPTION                       #
 ########################################################################
 
-5/7/19      16:00       ---         Official start of coding
+5/7/19      16:00       19:00       Official start of coding
                                     Discovering reference implementation behaviour
                                     Looking for error messages, exit statuses and
                                     where error messages are sent to (stderr) 
+                                    
+            21:00       00:00       Finished up to legit-show
+                                    Need to test code
 
 
 
@@ -35,5 +38,19 @@ legit-init:
       QUESTION: Whats the difference between >&2 and 1>&2
 
 legit-add:
-    - ALWAYS check for each command whether .legit exists otherwise
+    - ALWAYS check for each command whether .legit exists otherwise => this error gets checked first
       print error msg = "legit-add: error: no .legit directory containing legit repository exists"
+    - Types of add errors for files
+        - usage: legit-add <filenames>
+        - legit-add: error: can not open '...'
+        - legit-add: error: '...' is not a regular file
+        - legit-add: error: invalid filename '...'
+            - if given multiple file names to add and one of the filenames are invalid, none of the files are added
+            
+legit-commit -m "message":
+    - Types of errors (in order of precedence)
+        - Sample inputs (2041 legit-commit | 2041 legit-commit -m | 2041 legit-commit "hello" | 2041 legit-commit -v "hello")
+          Error msg = usage: legit-commit [-a] -m commit-message
+
+        - When no files have been added to staging = "nothing to commit"
+        - 
