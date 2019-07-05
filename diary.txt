@@ -1,0 +1,39 @@
+########################################################################
+#DATE       #START      #STOP       #DESCRIPTION                       #
+########################################################################
+
+5/7/19      16:00       ---         Official start of coding
+                                    Discovering reference implementation behaviour
+                                    Looking for error messages, exit statuses and
+                                    where error messages are sent to (stderr) 
+
+
+
+
+
+
+
+
+
+
+
+#######################################################################
+
+Reference implementation
+
+----------------------- Subset 0 ---------------------------------------
+
+legit-init:
+
+    - If .legit directory already exists are you use legit-init, error message = "legit-init: error: .legit already exists"
+      exit status = 1
+      #Note: i used $0 to do "legit-init:" --> change this to hardcode if it doesnt pass autotest
+    - If you specify a command line argument legit-init hello, error message = "usage: legit-init"
+      (this takes precedence over 1st error)
+      exit status = 1
+    - 2041 legit-init writes error messages to stderr NOT stdout
+      QUESTION: Whats the difference between >&2 and 1>&2
+
+legit-add:
+    - ALWAYS check for each command whether .legit exists otherwise
+      print error msg = "legit-add: error: no .legit directory containing legit repository exists"
