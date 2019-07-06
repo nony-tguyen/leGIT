@@ -8,16 +8,23 @@ then
 fi
 
 # Checking invalid arguments supplied
-if echo "$*" | egrep -v "^(-a )?\-m [^ ]+$" > /dev/null  
+echo "$2"
+if [ "$#" = "2" -a "$1" = "-m" ]  
 then
+    echo "-m"
+    msg="$2"
+else
     echo "usage: legit-commit [-a] -m commit-message" 1>&2
     exit 1
 fi
 
+#if echo "$msg" |
 # If -a is passed in
 #if egrep "\-a" > /dev/null
-exit 0
-##### CONSIDER CASE WHERE THERE IS NOTHING TO COMMIT #############
+
+# Checking if message contains a new line
+
+# Checking whether changes have been made to files in order to be committed
 changes=`egrep "[0-9]+" < ".legit/index/.changes"`
 if [ "$changes" -eq "0" ]
 then
@@ -36,7 +43,7 @@ fi
 # Each directory is named .commit.n
 n=0
 fn=".commit"
-while test -d "$fn.$n"
+while test -d "./legit/repo/$fn.$n"
 do
     n=$((n + 1))
 done
@@ -48,6 +55,5 @@ do
     cp "$file" ".legit/repo/$fn.$n/"
 done
 
-# Write to log file
-msg=`echo "$*" | sed "s/^\-a //" | sed "s/\-m //"`
-echo "$n $msg" >> ".legit/repo/.log"
+# Write commit msg to file
+echo "$n $msg" > ".legit/repo/$fn.$n/.msg"

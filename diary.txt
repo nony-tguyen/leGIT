@@ -7,11 +7,13 @@
                                     Looking for error messages, exit statuses and
                                     where error messages are sent to (stderr) 
                                     
-            21:00       00:00       Finished up to legit-show
+            21:00       00:00       Finished up to legit-log
                                     Need to test code
 
 
-6/7/19      13:00
+6/7/19      13:00       18:00       Making init, add, commit, log work together
+
+            10:30       00:00       Finishing up legit-show
 
 
 
@@ -49,11 +51,26 @@ legit-add:
             
 legit-commit -m "message":
     - Types of errors (in order of precedence)
+        - legit-commit: error: commit message can not contain a newline
+        
         - Sample inputs (2041 legit-commit | 2041 legit-commit -m | 2041 legit-commit "hello" | 2041 legit-commit -v "hello")
-          Error msg = usage: legit-commit [-a] -m commit-message
+          Error msg = usage: legit-commit [-a] -m commit-message        
 
+        
         - When no files have been added to staging = "nothing to commit"
     - 2041 legit-commit -m "hello"there produces "nothing to commit"
     
+    
 If you change the contents of file e.g. echo "new line" > a.txt
 then change it back to original contents of the file e.g. echo "a" > a.txt, nothing happens --> no need to commit
+
+
+
+legit-log:
+    - Types of errors
+        - legit-log: error: your repository does not have any commits yet
+        - When given more than one cmd args
+          usage: legit-log
+        - 
+
+legit-show:

@@ -14,24 +14,7 @@ then
     exit 1
 fi
 
-# Checking correct usage
-if [ "$#" != "0" ]
+if [ "$#" != "1" ]
 then
-    echo "usage: $0" 1>&2
-    exit 1
+    echo fail
 fi
-
-# Output each commit # and message in most recent order
-n=0
-while [ -d ".commit.$n" ]
-do
-    n=$((n + 1))
-done
-n=$((n - 1)
-
-while [ "$n" -ge "0" ]
-do
-    cat ".legit/repo/.commit.$n/.msg"
-    n=$((n - 1))
-done
-
