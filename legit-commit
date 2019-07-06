@@ -16,8 +16,15 @@ fi
 
 # If -a is passed in
 #if egrep "\-a" > /dev/null
-
+exit 0
 ##### CONSIDER CASE WHERE THERE IS NOTHING TO COMMIT #############
+changes=`egrep "[0-9]+" < ".legit/index/.changes"`
+if [ "$changes" -eq "0" ]
+then
+    echo "nothing to commit"
+    exit 0
+fi
+
 
 # Create repo to store commited files if haven't already
 if [ ! -d ".legit/repo" ]
@@ -26,6 +33,7 @@ then
 fi
 
 # Store sub-directories in .legit/repo/ for each commit, where n is the commit number
+# Each directory is named .commit.n
 n=0
 fn=".commit"
 while test -d "$fn.$n"
@@ -35,10 +43,11 @@ done
 
 mkdir ".legit/repo/$fn.$n"
 
-for file in ".legit/staging_area"/*
+for file in ".legit/index"/*
 do
     cp "$file" ".legit/repo/$fn.$n/"
-
 done
 
-
+# Write to log file
+msg=`echo "$*" | sed "s/^\-a //" | sed "s/\-m //"`
+echo "$n $msg" >> ".legit/repo/.log"

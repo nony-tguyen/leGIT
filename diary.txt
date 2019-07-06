@@ -11,7 +11,7 @@
                                     Need to test code
 
 
-
+6/7/19      13:00
 
 
 
@@ -53,4 +53,7 @@ legit-commit -m "message":
           Error msg = usage: legit-commit [-a] -m commit-message
 
         - When no files have been added to staging = "nothing to commit"
-        - 
+    - 2041 legit-commit -m "hello"there produces "nothing to commit"
+    
+If you change the contents of file e.g. echo "new line" > a.txt
+then change it back to original contents of the file e.g. echo "a" > a.txt, nothing happens --> no need to commit

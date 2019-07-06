@@ -37,17 +37,25 @@ do
 done
 
 # Create sub-directory to store files from legit-add if haven't already
-########################### CLEAN THIS UP ##############################
-if [ ! -d ".legit/staging_area" ]
+if [ ! -d ".legit/index" ]
 then
-    echo "no"
-    mkdir ".legit/staging_area"
-else
-    echo "exists already"
+    mkdir ".legit/index"
+    echo "0" > ".legit/index/.changes"
 fi
 
+# legit-add all files supplied from command line args only if changes
+# have been made from the last time it was staged
+changed=`egrep "[0-9]+" < ".legit/index/.changes"`
 for file in "$@" 
-do
+do   
+    # Counter to keep track of num of changes made to files
+    if ! diff "$file" ".legit/index/$file" >/dev/null 2>&1
+    then
+        changed=$((changed + 1))
+    fi
     #echo "$file"
-    cp "$file" ".legit/staging_area/"
+    cp "$file" ".legit/index/"
 done
+
+# Save number of 'changes' to file for other legit commands to read from
+echo "$changed" > ".legit/index/.changes"
