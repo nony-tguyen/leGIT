@@ -11,7 +11,6 @@ fi
 echo "$2"
 if [ "$#" = "2" -a "$1" = "-m" ]  
 then
-    echo "-m"
     msg="$2"
 else
     echo "usage: legit-commit [-a] -m commit-message" 1>&2
@@ -43,7 +42,7 @@ fi
 # Each directory is named .commit.n
 n=0
 fn=".commit"
-while test -d "./legit/repo/$fn.$n"
+while test -d ".legit/repo/$fn.$n"
 do
     n=$((n + 1))
 done

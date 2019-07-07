@@ -14,6 +14,10 @@
 6/7/19      13:00       18:00       Making init, add, commit, log work together
 
             10:30       00:00       Finishing up legit-show
+            
+7/7/19      13:30       15:30       Looking for all the types of input errors 
+                                    and handling them based off reference
+                                    Finished subset 0, need to fix errors
 
 
 
@@ -74,3 +78,25 @@ legit-log:
         - 
 
 legit-show:
+    - Errors:
+        - legit-show: error: your repository does not have any commits yet
+        - If cmd args != 1 
+          usage: legit-show <commit>:<filename>
+        - if number < 0
+          usage: legit-show <commit>:<filename>
+        - When ':' is not used
+          legit-show: error: invalid object '...'
+        - if commit number exceeds total commits or commit number is a string
+          legit-show: error: unknown commit '...'
+        - When ':' is passed in only
+          legit-show: error: invalid filename ''
+        - If file does not exist in the commit number (note: wrong commit number takes precedence)
+          legit-show: error: '...' not found in commit "number"
+          
+          OR file does not exist in index by specifying ':a.txt'
+          legit-show: error: '...' not found in index
+
+
+   
+   - If given no commit number, print contents in the file that is currently in staging area
+

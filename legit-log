@@ -23,7 +23,7 @@ fi
 
 # Output each commit # and message in most recent order
 n=0
-while [ -d ".commit.$n" ]
+while [ -d ".legit/repo/.commit.$n" ]
 do
     n=$((n + 1))
 done

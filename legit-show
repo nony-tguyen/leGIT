@@ -1,5 +1,7 @@
 #!/bin/dash
 
+##################### Error Checking ###################################
+
 # Checking .legit repo expo exist in current directory
 if [ ! -d ".legit" ]
 then
@@ -10,11 +12,80 @@ fi
 # Checking commits have been made before using legit-log
 if [ ! -d ".legit/repo/.commit.0" ]
 then
-    echo "$0: error: your repository does not have any commits yet"
+    echo "$0: error: your repository does not have any commits yet" 1>&2
     exit 1
 fi
 
+# Checking valid usage
 if [ "$#" != "1" ]
 then
-    echo fail
+    echo "usage: $0 <commit>:<filename>" 1>&2
+    exit 1
+fi
+
+if echo "$1" | egrep "^\-" >/dev/null
+then
+    echo "usage: $0 <commit>:<filename>" 1>&2
+    exit 1
+fi 
+
+if echo "$1" | egrep -v ":" >/dev/null
+then
+    echo "$0: error: invalid object $1" 1>&2
+    exit 1
+fi 
+
+
+# Checking commit number exists
+n=0
+while [ -d ".legit/repo/.commit.$n" ]
+do
+    n=$((n + 1))
+done
+
+commit_num=`echo "$1" | cut -d':' -f1`
+if [ "$commit_num" -lt "$n" ] 2>/dev/null
+then
+    :
+elif [ "$commit_num" = '' ]
+then
+    :
+else
+    echo "$0: error: unknown commit '$commit_num'" 1>&2
+    exit 1
+fi
+
+# Checking valid filename 
+fn=`echo "$1" | cut -d':' -f2-`
+if echo "$1" | cut -d':' -f2- | egrep -iv "[a-z0-9][a-z0-9_\-\.]*$" >/dev/null
+then    
+    echo "$0: error: invalid filename '$fn'" 1>&2
+    exit 1
+fi
+
+
+#################### Implementation ####################################
+
+# Display file from index if commit number is ommitted otherwise
+# print file at the specified commit -> all inputs up to this stage are valid
+# $commit_num = commit number
+# $fn = filename
+
+if [ "$commit_num" = '' ] 
+then
+    if [ ! -f ".legit/index/$fn" ]
+    then
+        echo "$0: error: '$fn' not found in index" 1>&2
+        exit 1
+    else
+        cat ".legit/index/$fn"
+    fi
+else
+    if [ ! -f "./legit/repo/.commit.$commit_num/$fn" ]
+    then
+        echo "$0: error: '$fn' not found in commit $commit_num" 1>&2
+        exit 1
+    else
+        cat "./legit/repo/.commit.$commit_num/$fn"
+    fi
 fi
