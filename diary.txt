@@ -19,6 +19,9 @@
                                     and handling them based off reference
                                     Finished subset 0, need to fix errors
 
+            23:00       1:00        Completed subset 0 - fixed errors
+                                    Changed implementation of legit-commit
+                                    to become more robust
 
 
 

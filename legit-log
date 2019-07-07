@@ -27,7 +27,7 @@ while [ -d ".legit/repo/.commit.$n" ]
 do
     n=$((n + 1))
 done
-n=$((n - 1)
+n=$((n - 1))
 
 while [ "$n" -ge "0" ]
 do

@@ -14,10 +14,19 @@ then
     exit 1
 fi
 
+for file in "$@"
+do
+    if echo "$file" | egrep "^\-" >/dev/null
+    then
+        echo "usage: $0 <commit>:<filename>" 1>&2
+        exit 1
+    fi 
+done
+
 # Check valid file names and that they exist as a regular file
 for fn in "$@"
 do
-    if echo "$fn" | egrep -v "^[a-zA-Z0-9][a-zA-Z0-9\.-_]*" > /dev/null
+    if echo "$fn" | egrep -v "^[a-zA-Z0-9][a-zA-Z0-9\.\-_]*" > /dev/null
     then
         echo "$0: error: invalid filename '$fn'" 1>&2
         exit 1
@@ -40,22 +49,13 @@ done
 if [ ! -d ".legit/index" ]
 then
     mkdir ".legit/index"
-    echo "0" > ".legit/index/.changes"
 fi
 
-# legit-add all files supplied from command line args only if changes
+# legit-add all files supplied from command line args and record if changes
 # have been made from the last time it was staged
-changed=`egrep "[0-9]+" < ".legit/index/.changes"`
 for file in "$@" 
 do   
-    # Counter to keep track of num of changes made to files
-    if ! diff "$file" ".legit/index/$file" >/dev/null 2>&1
-    then
-        changed=$((changed + 1))
-    fi
     #echo "$file"
     cp "$file" ".legit/index/"
 done
 
-# Save number of 'changes' to file for other legit commands to read from
-echo "$changed" > ".legit/index/.changes"

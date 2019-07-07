@@ -81,11 +81,11 @@ then
         cat ".legit/index/$fn"
     fi
 else
-    if [ ! -f "./legit/repo/.commit.$commit_num/$fn" ]
+    if [ ! -f ".legit/repo/.commit.$commit_num/$fn" ]
     then
         echo "$0: error: '$fn' not found in commit $commit_num" 1>&2
         exit 1
     else
-        cat "./legit/repo/.commit.$commit_num/$fn"
+        cat ".legit/repo/.commit.$commit_num/$fn"
     fi
 fi

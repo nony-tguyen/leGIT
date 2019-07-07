@@ -24,13 +24,50 @@ fi
 # Checking if message contains a new line
 
 # Checking whether changes have been made to files in order to be committed
-changes=`egrep "[0-9]+" < ".legit/index/.changes"`
-if [ "$changes" -eq "0" ]
+# by comparing all files between last commit and staging area
+diff=0
+if [ -d ".legit/repo/.commit.0" ]
 then
-    echo "nothing to commit"
-    exit 0
+    # Get last commit number
+    n=0
+    while test -d ".legit/repo/.commit.$n"
+    do
+        n=$((n + 1))
+    done
+    n=$((n - 1))
+
+    # Compare files from .commit.n with index
+    for file in ".legit/repo/.commit.$n"/*
+    do
+        fn=`echo "$file" | sed "s/.legit\/repo\/.commit.$n\///g"`
+        if  ! diff ".legit/repo/.commit.$n/$fn" ".legit/index/$fn" >/dev/null 2>&1
+        then
+            diff=1
+            break
+        fi
+    done
+
+    # Compare files from index with .commit.n
+    for file in ".legit/index"/*
+    do
+        fn=`echo "$file" | sed "s/.legit\/index\///g"`
+        if ! diff ".legit/index/$fn" ".legit/repo/.commit.$n/$fn" >/dev/null 2>&1
+        then
+            diff=1
+            break
+        fi
+    done
+
+else
+    # This is the first commit
+    n="-1"
 fi
 
+if [ "$n" != "-1" -a "$diff" = "0" ]
+then
+    echo "nothing to commit"
+    exit 0   
+fi
 
 # Create repo to store commited files if haven't already
 if [ ! -d ".legit/repo" ]
@@ -55,8 +92,6 @@ do
 done
 
 echo "Committed as commit $n"
-# Reset the changes file
-echo "0" > ".legit/index/.changes"
 
 # Write commit msg to file
 echo "$n $msg" > ".legit/repo/$fn.$n/.msg"
