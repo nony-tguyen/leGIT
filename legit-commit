@@ -54,5 +54,9 @@ do
     cp "$file" ".legit/repo/$fn.$n/"
 done
 
+echo "Committed as commit $n"
+# Reset the changes file
+echo "0" > ".legit/index/.changes"
+
 # Write commit msg to file
 echo "$n $msg" > ".legit/repo/$fn.$n/.msg"
