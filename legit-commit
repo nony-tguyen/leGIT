@@ -18,6 +18,7 @@ then
     # Update all files currently in index with the version in curr directory
     for file in ".legit/index"/*
     do
+        file=`basename $file`
         legit-add "$file" #-> use this for autotest because curr dir is appended to $PATH
         #./legit-add "$file" 
 
