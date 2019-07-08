@@ -7,11 +7,21 @@ then
     exit 1
 fi
 
-# Checking invalid arguments supplied
-#echo "$2"
+# Checking valid arguments are supplied
 if [ "$#" = "2" -a "$1" = "-m" ]  
 then
     msg="$2"
+elif [ "$#" = "3" -a "$1" = "-a" -a "$2" = "-m" ]
+then
+    msg="$3"
+    
+    # Update all files currently in index with the version in curr directory
+    for file in ".legit/index"/*
+    do
+        legit-add "$file" #-> use this for autotest because curr dir is appended to $PATH
+        #./legit-add "$file" 
+
+    done
 else
     echo "usage: legit-commit [-a] -m commit-message" 1>&2
     exit 1
@@ -86,6 +96,7 @@ done
 
 mkdir ".legit/repo/$fn.$n"
 
+# Commit all the files in index to .commit.n directory
 for file in ".legit/index"/*
 do
     cp "$file" ".legit/repo/$fn.$n/"

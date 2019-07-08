@@ -32,13 +32,13 @@ do
         exit 1
     fi
     
-    if [ ! -e "$fn" ]
+    if [ ! -e "$fn" -a ! -e ".legit/index/$fn" ]
     then
         echo "$0: error: can not open '$fn'" 1>&2
         exit 1
     fi
     # Storing only ordinary files in the index use -r or -f?    
-    if [ ! -f "$fn" ]  
+    if [ ! -f "$fn" -a ! -e ".legit/index/$fn" ]  
     then
         echo "$0: error: '$fn' is not a regular file" 1>&2
         exit 1
@@ -55,7 +55,12 @@ fi
 # have been made from the last time it was staged
 for file in "$@" 
 do   
-    #echo "$file"
-    cp "$file" ".legit/index/"
+    # If file deleted from working directory, also delete in index 
+    if [ ! -f "$file" -a -f ".legit/index/$file" ]
+    then
+        rm ".legit/index/$file"
+    else
+        cp "$file" ".legit/index/"
+    fi
 done
 

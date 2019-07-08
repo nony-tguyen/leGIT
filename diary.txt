@@ -23,7 +23,8 @@
                                     Changed implementation of legit-commit
                                     to become more robust
 
-
+8/7/19      16:30        18:30      Continue with subset 1
+                                    Trying to replicate an error created by the reference
 
 
 
@@ -103,3 +104,41 @@ legit-show:
    
    - If given no commit number, print contents in the file that is currently in staging area
 
+
+----------------------- Subset 1 ---------------------------------------
+
+legit-commit -a -m message:
+    - Issue found: If a file had been added and committed, then removed
+      from the current directory, the legit-status will changed to "removed"
+      for the file. The next commit will not include the deleted file
+      and it will remove the file from the index ==> ONLY WHEN USING -a BECAUSE ADDING THE DELETED FILE WILL REMOVE IT FROM THE INDEX
+      
+      - In legit-add, if the file was passed as an arg and it doesnt exist in working directory
+        but exist in index --> I remove it
+      
+      
+      
+######
+legit-add e.txt
+rm e.txt
+legit-status will show its added to index
+commit
+legitshow will still work
+legit-status will now say 'file deleted'
+but can't legit-commit --> will say nothing to commit
+make further changes to other files, add, commit and e.txt is still being committed can be seen by legit-show
+
+now legit-add e.txt again
+legit-status will say 'deleted'
+legit commit
+legit-status no longer displays e.txt
+
+Hence ==> if file removed from working directory --> file does not get removed from index until legit-added again
+
+CHECK WHAT HAPPENS IF IT HAS BEEN PREVIOUSLY COMMITTED BEFORE REMOVING
+
+
+
+#####
+ASK QUESTION ABOUT CALLING ANOTHER SHELL SCRIPT
+WITH ./ or just the name of program
