@@ -35,7 +35,6 @@ then
     exit 1
 fi 
 
-
 # Checking commit number exists
 n=0
 while [ -d ".legit/repo/.commit.$n" ]

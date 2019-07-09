@@ -1,0 +1,79 @@
+#!/bin/dash
+
+# Checking .legit repo expo exist in current directory
+if [ ! -d ".legit" ]
+then
+    echo "$0: error: no .legit directory containing legit repository exists" 1>&2
+    exit 1
+fi
+
+# Checking commits have been made before using legit-log
+if [ ! -d ".legit/repo/.commit.0" ]
+then
+    echo "$0: error: your repository does not have any commits yet" 1>&2
+    exit 1
+fi
+
+# Checking command line args, flag each rm option that is passed in
+force=0
+cached=0
+if [ "$1" = "--force" -a "$2" = "--cached" -a "$#" -gt "2" ] 
+then 
+    force=1
+    cached=1  
+    file_args=`echo "$@" |  sed 's/\-\-force \-\-cached //' `
+    
+elif [ "$1" = "--forced" -a "$2" != "--cached" -a "$#" -gt "1" ]
+then
+    force=1
+    file_args=`echo "$@" |  sed 's/\-\-force //' `
+    
+elif [ "$1" = "--cached" -a "$#" -gt "1" ]
+then
+    cached=1
+    file_args=`echo "$@" |  sed 's/\-\-cached //' `
+    
+elif [ "$#" -gt "0" ]
+then
+    file_args="$@"
+    
+else
+    echo "usage: $0 [--force] [--cached] <filenames>" 1>&2
+    exit 1
+fi
+
+
+# Check valid file names
+for file in $file_args
+do
+    if echo "$file" | egrep -iv "[a-z0-9][a-z0-9_\-\.]*$" >/dev/null
+    then    
+        echo "$0: error: invalid filename '$file'" 1>&2
+        exit 1
+    elif echo "$file" | egrep "^\-" >/dev/null
+    then
+        echo "usage: $0 [--force] [--cached] <filenames>" 1>&2   
+        exit 1
+    fi
+done
+
+# The latest commit number stored in $n 
+n=0
+while [ -d ".legit/repo/.commit.$n" ]
+do
+    n=$((n + 1))
+done
+n=$((n - 1))
+
+# Remove the file (passed all previous conditions or --force was supplied)
+
+# Rm file from working directory
+if [ "$force" = 1 -a "$cached" = 0 ]
+then
+    #rm "$file"    
+
+fi
+
+# Rm file from index
+#rm ".legit/index/$file"
+
