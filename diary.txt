@@ -28,6 +28,8 @@
 
             21:00        00:00      Finished '-a' option in subset1
                                     Started on rm
+                                    
+12/7/19     21:30        00:30       Finished legit-rm, need to fix some errors 
 
 
 
@@ -154,17 +156,41 @@ legit-rm [--force] [--cached] filenames:
 
         - For files that have been staged but not committed or it differs from last commit, using legit-rm
           legit-rm: error: '...' has changes staged in the index
-            - --cached will delete the file in the index but keep in the working directory
+            No option = throws the error 
+            --cached = delete the file in the index only
+            --force = delete without warning
+            
+            *** Not sure about the rm condition, because the file should be removed
             
         - For no args and --cached
           legit-rm: error: '...' in index is different to both working file and repository
+            No option = throws error
+            --cached only = throws error
+            Includes new files that have not been committed (diff to repo) and has a version in the index that is different to version in working directory
           
         - Using legit-rm, made changes to file since last commit but haven't added to index
           legit-rm: error: 'e.txt' in repository is different to working file
+            No option = throws error
+            --cached = delete file in index 
           
         - Also check for valid file names
+        - Considered case when the same file is passed in many times at one time
 
 
 #####
 ASK QUESTION ABOUT CALLING ANOTHER SHELL SCRIPT
 WITH ./ or just the name of program
+
+####
+Look at the changes in legit-status when
+- Commit e.txt
+- legit-rm e.txt
+- Check status
+- Create same e.txt file
+- Check status
+- legit-add e.txt
+- check status
+
+Also,
+if a new file that has not been committed before is legit-added
+and then the contents of its files are changed --> still display "added to index"

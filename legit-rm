@@ -23,7 +23,7 @@ then
     cached=1  
     file_args=`echo "$@" |  sed 's/\-\-force \-\-cached //' `
     
-elif [ "$1" = "--forced" -a "$2" != "--cached" -a "$#" -gt "1" ]
+elif [ "$1" = "--force" -a "$2" != "--cached" -a "$#" -gt "1" ]
 then
     force=1
     file_args=`echo "$@" |  sed 's/\-\-force //' `
@@ -46,13 +46,13 @@ fi
 # Check valid file names
 for file in $file_args
 do
-    if echo "$file" | egrep -iv "[a-z0-9][a-z0-9_\-\.]*$" >/dev/null
-    then    
-        echo "$0: error: invalid filename '$file'" 1>&2
-        exit 1
-    elif echo "$file" | egrep "^\-" >/dev/null
+    if echo "$file" | egrep "^\-" >/dev/null
     then
         echo "usage: $0 [--force] [--cached] <filenames>" 1>&2   
+        exit 1
+    elif echo "$file" | egrep -iv "[a-z0-9][a-z0-9_\-\.]*$" >/dev/null
+    then    
+        echo "$0: error: invalid filename '$file'" 1>&2
         exit 1
     fi
 done
@@ -65,15 +65,68 @@ do
 done
 n=$((n - 1))
 
-# Remove the file (passed all previous conditions or --force was supplied)
+# Check each file exists in the repository i.e. in the index
+for file in $file_args
+do
+    if [ ! -f ".legit/index/$file" ]
+    then
+        echo "$0: error: '$file' is not in the legit repository" 1>&2
+        exit 1
+    fi
+done
+        
+# Perform the appropriate action on each file
+for file in $file_args
+do
 
-# Rm file from working directory
-if [ "$force" = 1 -a "$cached" = 0 ]
-then
-    #rm "$file"    
+    if [ -f ".legit/index/$file" ]
+    then
+        # Store the exit status of the diff command to determine if files are the same
+        # 0 = matching, not 0 = not matching
+        diff "$file" ".legit/index/$file" >/dev/null 2>&1
+        diff_fToindex=$?
+        
+        diff "$file" ".legit/repo/.commit.$n/$file" >/dev/null 2>&1
+        diff_fTocommit=$?
+        
+        diff ".legit/index/$file" ".legit/repo/.commit.$n/$file" >/dev/null 2>&1
+        diff_commit_index=$?
+        
+        # if $? = 0 --> match, if $? != 0 --> doesnt match or doesnt exist
+        
+        # Files that have its changes staged but not committed 
+        # Includes new files that are added to index or changed from last commit
+        if [ $force = 0 -a $cached = 0 -a $diff_fToindex = 0 -a $diff_commit_index != 0 ]
+        then
+            echo "$0: error: '$file' has changes staged in the index"
+            exit 1
+        fi
+        
+        # Different version of the file in index to working directory and last commit 
+        if [ $force = 0 -a $diff_fToindex != 0 -a $diff_commit_index != 0 ]  
+        then
+            echo "$0: error: '$file' in index is different to both working file and repository"
+            exit 1
+        fi
+        
+        # Changes made to file since the last commit but not added to index
+        if [ $force = 0 -a $diff_fTocommit != 0 -a $diff_commit_index = 0 ] 
+        then
+            echo "$0: error: '$file' in repository is different to working file"
+            exit 1
+        fi   
 
-fi
-
-# Rm file from index
-#rm ".legit/index/$file"
-
+        # Remove the file (passed all previous conditions or --force was supplied)
+        # Rm file from working directory
+        #if [ "$force" = 1 -a "$cached" = 0 ]
+        if [ $cached = 0 ]
+        then
+            rm "$file"  
+            #echo "rm $file"  
+        fi
+        # Rm file from index
+        rm ".legit/index/$file"
+        #echo "rm .legit/index/$file"
+    fi
+    
+done

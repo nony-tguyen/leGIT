@@ -18,7 +18,7 @@ for file in "$@"
 do
     if echo "$file" | egrep "^\-" >/dev/null
     then
-        echo "usage: $0 <commit>:<filename>" 1>&2
+        echo "usage: $0 <filename>" 1>&2
         exit 1
     fi 
 done

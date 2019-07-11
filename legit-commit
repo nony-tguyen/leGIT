@@ -100,6 +100,7 @@ mkdir ".legit/repo/$fn.$n"
 # Commit all the files in index to .commit.n directory
 for file in ".legit/index"/*
 do
+    #echo hello ################### STUCK HERE ############################################
     cp "$file" ".legit/repo/$fn.$n/"
 done
 
