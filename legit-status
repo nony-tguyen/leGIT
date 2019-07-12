@@ -22,12 +22,12 @@ do
 done
 n=$((n - 1))
 
-# Store all filenames into a new file callfed .status for processing 
+# Store all filenames into a new file called .status for processing 
 if [ -f ".legit/.status" ]
 then
     rm ".legit/.status"
 fi
-
+touch ".legit/.status"
 # Append files from working directory to .status
 for file in *
 do
@@ -63,6 +63,7 @@ done
 files=`sort ".legit/.status" | uniq` 
 index_path=".legit/index"
 commit_path=".legit/repo/.commit.$n"
+
 for file in $files
 do
     # 'untracked' -> file in working dir and not in index

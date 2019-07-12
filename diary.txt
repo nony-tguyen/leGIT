@@ -23,18 +23,20 @@
                                     Changed implementation of legit-commit
                                     to become more robust
 
-8/7/19      16:30        18:30      Continue with subset 1
+8/7/19      16:30       18:30       Continue with subset 1
                                     Trying to replicate an error created by the reference
 
-            21:00        00:00      Finished '-a' option in subset1
+            21:00       00:00       Finished '-a' option in subset1
                                     Started on rm
                                     
-12/7/19     21:30        00:30      Finished legit-rm, need to fix some errors 
+12/7/19     21:30       00:30       Finished legit-rm, need to fix some errors 
 
-13/9/19     10:00        12:00      Fixed legit-rm erros
+13/9/19     10:00       12:00       Fixed legit-rm erros
                                     Start on legit-status
 
             16:30       19:30       Finished legit-status
+            
+            21:00       21:15       Got subset 1 to work
 
 
 #######################################################################
