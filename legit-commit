@@ -68,12 +68,19 @@ then
             break
         fi
     done
+    
+    # If both index and .commit.n are empty
+    if [ `ls ".legit/index/" | wc -l` = 0 -a `ls ".legit/repo/.commit.$n/" | wc -l` = 0 ]
+    then
+        diff=0
+    fi
 
 else
     # This is the first commit
     n="-1"
 fi
 
+# If this is not the first commit and there are no differences between files
 if [ "$n" != "-1" -a "$diff" = "0" ]
 then
     echo "nothing to commit"
@@ -100,8 +107,12 @@ mkdir ".legit/repo/$fn.$n"
 # Commit all the files in index to .commit.n directory
 for file in ".legit/index"/*
 do
-    #echo hello ################### STUCK HERE ############################################
-    cp "$file" ".legit/repo/$fn.$n/"
+    # If index/ is empty, file will expand to the literal string ".legit/index/*" 
+    # rather than look inside the directory for any files
+    if [ "$file" != ".legit/index/*" ]
+    then
+        cp "$file" ".legit/repo/$fn.$n/"
+    fi    
 done
 
 echo "Committed as commit $n"

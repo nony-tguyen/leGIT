@@ -29,8 +29,12 @@
             21:00        00:00      Finished '-a' option in subset1
                                     Started on rm
                                     
-12/7/19     21:30        00:30       Finished legit-rm, need to fix some errors 
+12/7/19     21:30        00:30      Finished legit-rm, need to fix some errors 
 
+13/9/19     10:00        12:00      Fixed legit-rm erros
+                                    Start on legit-status
+
+            16:30       19:30       Finished legit-status
 
 
 #######################################################################
@@ -176,7 +180,21 @@ legit-rm [--force] [--cached] filenames:
         - Also check for valid file names
         - Considered case when the same file is passed in many times at one time
 
-
+legit-status
+    - If file added to index for the first time (legit-add e.txt)
+      then removed (rm e.txt)
+      legit-status says "added to index" instead of "file deleted"
+      
+    - Commit a file (legit-commit e.txt)
+      make changes to it and stage it (echo ".." > e.txt, legit-add e.txt)
+      remove the file in working dir (rm e.txt)
+      legit-status = file deleted, different changes staged for commit
+      
+    - If file added to index for the first time, and the file gets changed
+      in the working dir --> still displays "added to index"
+    
+    
+    
 #####
 ASK QUESTION ABOUT CALLING ANOTHER SHELL SCRIPT
 WITH ./ or just the name of program

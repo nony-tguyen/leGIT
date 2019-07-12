@@ -1,0 +1,125 @@
+#!/bin/dash
+
+# Checking .legit repo expo exist in current directory
+if [ ! -d ".legit" ]
+then
+    echo "$0: error: no .legit directory containing legit repository exists" 1>&2
+    exit 1
+fi
+
+# Checking commits have been made before using legit-log
+if [ ! -d ".legit/repo/.commit.0" ]
+then
+    echo "$0: error: your repository does not have any commits yet" 1>&2
+    exit 1
+fi
+
+# The latest commit number stored in $n 
+n=0
+while [ -d ".legit/repo/.commit.$n" ]
+do
+    n=$((n + 1))
+done
+n=$((n - 1))
+
+# Store all filenames into a new file callfed .status for processing 
+if [ -f ".legit/.status" ]
+then
+    rm ".legit/.status"
+fi
+
+# Append files from working directory to .status
+for file in *
+do
+    # Checking directory contain files otherwise "*" becomes a literal '*'
+    if [ "$file" != "*" ]
+    then
+        echo "$file" >> ".legit/.status"
+    fi
+done
+
+# Append files from index to .status
+for file in ".legit/index"/*
+do
+    if [ "$file" != ".legit/index/*" ]
+    then
+        fn=`basename $file`
+        echo "$fn" >> ".legit/.status"
+    fi
+done
+
+# Append files from last commit to .status
+for file in ".legit/repo/.commit.$n"/*
+do
+    if [ "$file" != ".legit/repo/.commit.$n/*" ]
+    then 
+        fn=`basename $file`
+        echo "$fn" >> ".legit/.status"
+    fi
+done
+
+# Store alphabetical order of files in variable
+# Loop through the ordered files and print respective status
+files=`sort ".legit/.status" | uniq` 
+index_path=".legit/index"
+commit_path=".legit/repo/.commit.$n"
+for file in $files
+do
+    # 'untracked' -> file in working dir and not in index
+    if [ -f "$file" -a ! -f ".legit/index/$file" ]
+    then
+        echo "$file - untracked"            
+    
+    # 'added to index' -> new file added to index for first time
+    elif [ -f "$file" -a -f "$index_path/$file" -a ! -f "$commit_path/$file" ]
+    then
+        echo "$file - added to index"
+        
+    # 'deleted' -> file committed but removed from working dir and index
+    elif [ ! -f "$file" -a ! -f "$index_path/$file" -a -f "$commit_path/$file" ]
+    then
+        echo "$file - deleted"
+        
+    else       
+        # Store exit status of diff like in legit-rm
+        diff "$file" "$index_path/$file" >/dev/null 2>&1
+        diff_fToindex=$?
+            
+        diff "$file" "$commit_path/$file" >/dev/null 2>&1
+        diff_fTocommit=$?
+            
+        diff "$index_path/$file" "$commit_path/$file" >/dev/null 2>&1
+        diff_commit_index=$?
+        
+        # 'file deleted' -> file exist in index and last commit, but rm'd from working dir
+        if [ ! -f "$file" -a -f "$index_path/$file" -a -f "$commit_path/$file" -a "$diff_commit_index" = 0 ]
+        then
+            echo "$file - file deleted"
+        
+        # Same scenario as above but the file in index is different to file in commit
+        elif [ ! -f "$file" -a -f "$index_path/$file" -a -f "$commit_path/$file" -a "$diff_commit_index" = 1 ]
+        then
+            echo "$file - file deleted, different changes staged for commit"
+        
+        # File is different in working directory, index and commit    
+        elif [ $diff_fToindex = 1 -a $diff_fTocommit = 1 -a $diff_commit_index = 1 ]
+        then
+            echo "$file - file changed, different changes staged for commit"
+        
+        # File previously committed and new changes are added to index
+        elif [ $diff_fToindex = 0 -a $diff_fTocommit = 1 -a $diff_commit_index = 1 ]
+        then
+            echo "$file - file changed, changes staged for commit"
+            
+        # File changed in working dir but index and commit are still the same    
+        elif [ $diff_fToindex = 1 -a $diff_fTocommit = 1 -a $diff_commit_index = 0 ]
+        then
+            echo "$file - file changed, changes not staged for commit"
+        
+        # Same version of the file everywhere
+        elif [ $diff_fToindex = 0 -a $diff_fTocommit = 0 -a $diff_commit_index = 0 ]
+        then
+            echo "$file - same as repo"
+        fi
+    fi
+done

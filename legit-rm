@@ -82,7 +82,7 @@ do
     if [ -f ".legit/index/$file" ]
     then
         # Store the exit status of the diff command to determine if files are the same
-        # 0 = matching, not 0 = not matching
+        # 0 = matching, 1 = not matching, 2 = does not exist
         diff "$file" ".legit/index/$file" >/dev/null 2>&1
         diff_fToindex=$?
         
@@ -110,7 +110,7 @@ do
         fi
         
         # Changes made to file since the last commit but not added to index
-        if [ $force = 0 -a $diff_fTocommit != 0 -a $diff_commit_index = 0 ] 
+        if [ $force = 0 -a $cached = 0 -a $diff_fTocommit != 0 -a $diff_commit_index = 0 ] 
         then
             echo "$0: error: '$file' in repository is different to working file"
             exit 1
