@@ -29,14 +29,16 @@
             21:00       00:00       Finished '-a' option in subset1
                                     Started on rm
                                     
-12/7/19     21:30       00:30       Finished legit-rm, need to fix some errors 
+11/7/19     21:30       00:30       Finished legit-rm, need to fix some errors 
 
-13/9/19     10:00       12:00       Fixed legit-rm erros
+12/9/19     10:00       12:00       Fixed legit-rm erros
                                     Start on legit-status
 
             16:30       19:30       Finished legit-status
             
             21:00       21:15       Got subset 1 to work
+            
+13/9/19     16:30       23:00       Writing test scripts
 
 
 #######################################################################
