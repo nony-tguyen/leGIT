@@ -10,7 +10,7 @@ fi
 ./legit-init
 touch a 
 ./legit-add a
-# The following should fail
+# The following should fail due to invalid arguments
 ./legit-commit 
 ./legit-commit "no m flag passed in"
 ./legit-commit -m ""

@@ -23,6 +23,12 @@ do
     fi 
 done
 
+# Create sub-directory to store files from legit-add if haven't already
+if [ ! -d ".legit/index" ]
+then
+    mkdir ".legit/index"
+fi
+
 # Check valid file names and that they exist as a regular file
 for fn in "$@"
 do
@@ -44,12 +50,6 @@ do
         exit 1
     fi
 done
-
-# Create sub-directory to store files from legit-add if haven't already
-if [ ! -d ".legit/index" ]
-then
-    mkdir ".legit/index"
-fi
 
 # legit-add all files supplied from command line args and record if changes
 # have been made from the last time it was staged

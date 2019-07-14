@@ -1,0 +1,119 @@
+#!/usr/bin/perl -w
+
+# NOTE: I did not finish legit-checkout and merge, to check how my branches have been
+# created, look inside the .legit directory 
+
+use File::Copy;
+use File::Basename;
+use File::Path;
+
+#################### Helper functions ##################################
+# Do initial error checking
+sub legit_valid {
+    if ( ! -d ".legit") {
+        print STDERR "$0: error: no .legit directory containing legit repository exists\n";
+        exit 1;
+    }
+    if ( ! -d ".legit/repo/.commit.0") {
+        print STDERR "$0: error: your repository does not have any commits yet\n";
+        exit 1;
+    }
+}
+
+# Print all branches in alphabetical order when no args passed in
+sub display_branches {
+    my %branches = ();
+    $branches{"master"} = 1;
+    
+    foreach my $bn (glob ".legit/*") {
+        $bn =~ s/.legit\///;
+        if ("$bn" =~ /branch\.(.*)/) {
+            $branches{$1} = 1;
+        }
+    }
+    
+    foreach my $bname (sort keys %branches) {
+        print "$bname\n";
+    }
+}
+
+sub create_branch {
+    my ($bname) = @_;
+
+    # Copy current index to new branch's index
+    mkdir ".legit/branch.$bname";
+    mkdir ".legit/branch.$bname/index";
+    foreach my $file (glob ".legit/index/*") {
+        copy("$file", ".legit/branch.$bname/index");
+    }
+    
+    # Copy current commits to new branch's commits
+    mkdir ".legit/branch.$bname/repo";
+    foreach my $commit (glob ".legit/repo/.commit.*") {
+        $commit = basename $commit;
+        $commit =~ /\.commit\.(\d+)/;
+        $n = $1;
+        mkdir ".legit/branch.$bname/repo/.commit.$n";
+        foreach my $fn (glob ".legit/repo/.commit.$n/*") {
+            copy("$fn", ".legit/branch.$bname/repo/.commit.$n/");
+            copy(".legit/repo/.commit.$n/.msg", ".legit/branch.$bname/repo/.commit.$n/");
+        }
+        
+    }
+}
+
+sub delete_branch {
+    my ($bname) = @_;
+    # Check for merge errors
+    rmtree ".legit/branch.$bname";
+    print "Deleted branch '$bname'\n";
+}
+
+######################## Main program ##################################
+
+legit_valid();
+
+# Lists current branch names 
+if (@ARGV == 0) {
+    display_branches();
+    exit 0;
+} 
+
+# Checking if "-d" is passed as an arg
+my $delete = 0;
+if ($ARGV[0] eq '-d') {
+    $delete = 1;
+    shift @ARGV;
+    
+    if (@ARGV == 0) {
+        print STDERR "$0: error: branch name required\n";
+        exit 1;
+    }
+}
+
+$bname = shift @ARGV;
+
+# Error checking
+if ($bname !~ /^[a-zA-Z0-9][a-zA-Z0-9\.\-_]*/) {
+    print STDERR "$0: error: invalid branch name '$bname'\n";
+    exit 1;
+} 
+elsif ($delete == 1 and $bname eq "master") {
+    print STDERR "$0: error: can not delete branch '$bname'\n";
+    exit 1;
+}
+elsif ($delete == 1 and ! -d ".legit/branch.$bname") {
+    print STDERR "$0: error: branch '$bname' does not exist\n";
+    exit 1;
+}
+elsif (@ARGV != 0) {
+    print STDERR "usage: $0 branch [-d] <branch>\n";
+    exit 1;
+}
+elsif ($delete == 0 and (-d ".legit/branch.$bname" or $bname eq "master")) {
+    print STDERR "$0: error: branch '$bname' already exists\n";
+    exit 1;
+}
+
+create_branch("$bname") if ($delete == 0);
+delete_branch("$bname") if ($delete == 1);

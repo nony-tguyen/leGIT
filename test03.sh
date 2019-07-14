@@ -32,7 +32,7 @@ echo "hello world" > a.txt
 ./legit-show :a.txt
 
 # Checking if first commit can still be seen after several commits
-# after removing it
+# have been made after removing 'a.txt'
 ./legit-rm a.txt
 ./legit-commit -m "2nd"
 echo "1" > new
